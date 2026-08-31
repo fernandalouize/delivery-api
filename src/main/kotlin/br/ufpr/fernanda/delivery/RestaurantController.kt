@@ -12,16 +12,31 @@ class RestaurantController(
 		private val repository: RestaurantRepository
 ) {
 		@PostMapping("/restaurants")
-		fun create(@RequestBody restaurant: Restaurant): Restaurant = repository.save(restaurant)
+		fun create(@RequestBody request: CreateRestaurantRequest): RestaurantResponse {
+			val restaurant = Restaurant(
+					name = request.name,
+					address = request.address,
+					deliveryBaseFeeInCents = request.deliveryBaseFeeInCents,
+					latitude = request.latitude,
+					longitude = request.longitude
+			)
+			
+			val saved = repository.save(restaurant)
+			
+			return saved.toResponse()
+		}
 		@GetMapping("/restaurants")
-		fun list() : List<Restaurant> = repository.findAll()
+		fun list() : List<RestaurantResponse>{ 
+			return repository.findAll().map{ it.toResponse() }
+			}	
 		@GetMapping("/restaurants/{id}")
-		fun findById(@PathVariable id: Long): ResponseEntity<Restaurant> {
+		fun findById(@PathVariable id: Long): ResponseEntity<RestaurantResponse> {
 			val restaurant = repository.findById(id).orElse(null)
 			return if (restaurant == null){
 				ResponseEntity.notFound().build()
 			} else {
-				ResponseEntity.ok(restaurant)
+				val response = restaurant.toResponse()
+				ResponseEntity.ok(response)
 			}
 		}
 }
