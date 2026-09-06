@@ -34,4 +34,10 @@ class MenuItemController(
 		}
     }
 
+    @GetMapping("/restaurants/{restaurantId}/menu-items")
+    fun list(@PathVariable restaurantId : Long) : List<MenuItemResponse>
+    {
+        return menuItemRepository.findByRestaurantId(restaurantId).map{ it.toResponse()}
+    }
+
 }
