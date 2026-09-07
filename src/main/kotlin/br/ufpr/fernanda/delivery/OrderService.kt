@@ -67,4 +67,26 @@ class OrderService(
         return orderRepository.save(order)
     
     }
+
+    fun advanceStatus(orderId: Long, newStatus: OrderStatus) : Order {
+        val order = orderRepository.findById(orderId).
+        orElseThrow{NotFoundException("Order item ${orderId} does not exist. ")}
+
+        if (!order.status.canTransitionTo(newStatus)){
+            throw InvalidStatusTransitionException("Invalid status transition from ${order.status} to ${newStatus}. ")        
+        }
+
+        order.status = newStatus
+        return orderRepository.save(order)
+    }
+
+    fun cancelOrder(orderId: Long): Order = advanceStatus(orderId, OrderStatus.CANCELLED)
+
+    fun getOrder(orderId: Long): Order = 
+        orderRepository.findById(orderId)
+        .orElseThrow{ NotFoundException("Order ${orderId} not found")}
+
+    fun listOrders(status: OrderStatus?): List<Order> =
+        if (status == null) orderRepository.findAll()
+        else orderRepository.findByStatus(status)
 }
