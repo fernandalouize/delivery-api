@@ -27,20 +27,34 @@ The application starts on port 8080.
 
 ## Endpoints
 
-| Method | Path      | Description                     |
-|--------|-----------|---------------------------------|
-| GET    | `/health` | Returns whether the API is up   |
+| Method | Path                                | Description                          |
+|--------|-------------------------------------|--------------------------------------|
+| GET    | `/health`                           | Returns whether the API is up        |
+| POST   | `/restaurants`                      | Creates a restaurant                 |
+| GET    | `/restaurants`                      | Lists all restaurants                |
+| GET    | `/restaurants/{id}`                 | Returns one restaurant, or 404       |
+| POST   | `/restaurants/{id}/menu-items`      | Adds an item to a restaurant's menu  |
+| GET    | `/restaurants/{id}/menu-items`      | Lists a restaurant's menu items      |
 
 ```bash
-curl localhost:8080/health
+curl -X POST localhost:8080/restaurants \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Cantina da Nona","address":"Rua XV, 100","deliveryBaseFeeInCents":500,"latitude":-25.42,"longitude":-49.27}'
 ```
+
+Prices and fees are stored as integer cents, never as floating point, so that
+money is never subject to binary rounding error.
+
+Requests and responses use dedicated DTOs rather than the JPA entities, which
+keeps the API contract independent from the database schema and prevents
+clients from setting server-controlled fields such as `id`.
 
 ## Status
 
 Work in progress. The project is being built in milestones:
 
 - [x] **M0** - Project setup and health endpoint
-- [ ] **M1** - Restaurants and menu items: entities, repositories, DTOs, persistence
+- [x] **M1** - Restaurants and menu items: entities, repositories, DTOs, persistence
 - [ ] **M2** - Orders: creation rules, total and delivery fee calculation, and a status state machine
 - [ ] **M3** - Tests covering the business rules
 - [ ] **M4** - PostgreSQL with Docker Compose, Swagger UI, and documented design
