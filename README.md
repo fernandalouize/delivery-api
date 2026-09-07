@@ -14,10 +14,12 @@ This is a learning project, built as my first experience with Kotlin and Spring 
 - H2 in-memory database
 - JUnit 5
 - Java 21
+- springdoc-openapi (Swagger UI)
 
 ## Running
 
 Requires JDK 21.
+Interactive API documentation is available at http://localhost:8080/swagger-ui.html
 
 ```bash
 ./gradlew bootRun
